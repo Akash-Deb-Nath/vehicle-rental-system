@@ -37,14 +37,35 @@ const createBookingInDB = async (payload: Record<string, unknown>) => {
 
   return bookingResult;
 };
-const getBookings = async (user: any) => {
+const getBookingsFromDB = async (user: any) => {
+  let bookings: any[] = [];
   if (user.role === "admin") {
-    return pool.query(`SELECT * FROM bookings`);
+    const result = await pool.query(`SELECT * FROM bookings`);
+    bookings = result.rows;
   }
   if (user.role === "customer") {
-    return pool.query(`SELECT * FROM bookings WHERE customer_id=$1`, [user.id]);
+    const result = await pool.query(
+      `SELECT * FROM bookings WHERE customer_id=$1`,
+      [user.id]
+    );
+    bookings = result.rows;
   }
-  throw new Error("Forbidden");
+  const finalResult = [];
+  for (const booking of bookings) {
+    const userResult = await pool.query(`SELECT * FROM users WHERE id=$1`, [
+      booking.customer_id,
+    ]);
+    const vehicleResult = await pool.query(
+      `SELECT * FROM vehicles WHERE id=$1`,
+      [booking.vehicle_id]
+    );
+    finalResult.push({
+      ...booking,
+      customer: user.role === "admin" ? userResult.rows[0] : undefined,
+      vehicle: vehicleResult.rows[0],
+    });
+  }
+  return finalResult;
 };
 const updateBookingInDB = async (
   user: any,
@@ -74,18 +95,21 @@ const updateBookingInDB = async (
     `UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *`,
     [status, bookingId]
   );
-
-  if (status === "cancelled" || status === "returned") {
+  if (status === "returned") {
     await pool.query(
       `UPDATE vehicles SET availability_status='available' WHERE id=$1`,
       [booking.vehicle_id]
     );
+    return {
+      ...result.rows[0],
+      vehicle: { availability_status: "available" },
+    };
   }
   return result.rows[0];
 };
 
 export const bookingServices = {
   createBookingInDB,
-  getBookings,
+  getBookingsFromDB,
   updateBookingInDB,
 };

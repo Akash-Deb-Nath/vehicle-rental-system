@@ -6,9 +6,9 @@ const { getUserFromDB, updateUserInDB, deleteUserFromDB } = userServices;
 const getUser = async (req: Request, res: Response) => {
   try {
     const result = await getUserFromDB();
-    res.status(201).json({
+    res.status(200).json({
       success: true,
-      message: "Users retrieve successfully",
+      message: "Users retrieved successfully",
       data: result.rows,
     });
   } catch (error: any) {
@@ -30,7 +30,7 @@ const updateUser = async (req: Request, res: Response) => {
     } else {
       res.status(200).json({
         success: true,
-        message: "Users updated successfully",
+        message: "User updated successfully",
         data: result.rows[0],
       });
     }
@@ -54,7 +54,6 @@ const deleteUser = async (req: Request, res: Response) => {
       res.status(200).json({
         success: true,
         message: "User deleted successfully",
-        data: null,
       });
     }
   } catch (error: any) {
