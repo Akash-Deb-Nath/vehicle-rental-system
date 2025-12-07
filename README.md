@@ -29,10 +29,6 @@ A backend API for a vehicle rental management system that handles:
 
 You can test the API directly from Postman using the live server.
 
-### Prerequisites
-
-Make sure you have Postman installed on your system:
-
 ### Authentication
 
 | Method | Endpoint              | Access | Description                 |
