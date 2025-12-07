@@ -7,11 +7,11 @@ const auth = (...roles: string[]) => {
     try {
       const token = req.headers.authorization;
       if (!token) {
-        return res.status(500).json({ message: "You are not allowed!" });
+        return res.status(401).json({ message: "You are not allowed!" });
       }
       const splitToken = token.split(" ")[1];
       if (!splitToken) {
-        return res.status(500).json({ message: "Invalid token format" });
+        return res.status(401).json({ message: "Invalid token format" });
       }
       const decodedToken = jwt.verify(
         splitToken,
@@ -19,7 +19,7 @@ const auth = (...roles: string[]) => {
       ) as JwtPayload;
       req.user = decodedToken;
       if (roles.length && !roles.includes(decodedToken.role)) {
-        return res.status(401).json({
+        return res.status(403).json({
           error: "unauthorized",
         });
       }

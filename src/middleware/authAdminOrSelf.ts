@@ -9,7 +9,9 @@ const authAdminOrSelf = async (
     const loggedInUser = req.user as any;
     const targetUserId = req.params.userId;
     if (loggedInUser.role !== "admin" && loggedInUser.id != targetUserId) {
-      return res.status(403).json({ error: "Forbidden" });
+      return res
+        .status(403)
+        .json({ error: "Access denied. Insufficient permissions." });
     }
     next();
   } catch (error: any) {

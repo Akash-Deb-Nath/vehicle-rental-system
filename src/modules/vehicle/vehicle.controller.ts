@@ -30,7 +30,7 @@ const getVehicle = async (req: Request, res: Response) => {
     if (result.rows.length === 0) {
       res.status(200).json({
         success: true,
-        message: "Vehicle not found",
+        message: "No vehicles found",
         data: result.rows,
       });
     } else {
