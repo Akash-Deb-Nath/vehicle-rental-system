@@ -4,6 +4,14 @@ const createBookingInDB = async (payload: Record<string, unknown>) => {
   const { vehicle_id, customer_id, rent_start_date, rent_end_date } = payload;
   const startDate = new Date(rent_start_date as string);
   const endDate = new Date(rent_end_date as string);
+  if (endDate <= startDate) {
+    throw new Error("End date must be after start date");
+  }
+
+  if (endDate < new Date()) {
+    throw new Error("End date must be today or in the future");
+  }
+
   const vehicleResult = await pool.query(
     `SELECT * FROM vehicles WHERE id=$1 AND availability_status='available'`,
     [vehicle_id]
