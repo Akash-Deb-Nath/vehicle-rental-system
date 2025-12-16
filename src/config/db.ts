@@ -37,7 +37,7 @@ const initDB = async () => {
     customer_id INT REFERENCES users(id) ON DELETE CASCADE,
     vehicle_id INT REFERENCES vehicles(id) ON DELETE CASCADE,
     rent_start_date DATE NOT NULL,
-    rent_end_date DATE NOT NULL CHECK (rent_end_date > rent_start_date),
+    rent_end_date DATE NOT NULL CHECK (rent_end_date > rent_start_date AND rent_end_date >= CURRENT_DATE),
     total_price INT NOT NULL CHECK (total_price > 0),
     status TEXT CHECK (status IN ('active','cancelled','returned'))
     )
