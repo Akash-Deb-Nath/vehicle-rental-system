@@ -52,6 +52,19 @@ const getBookingsFromDB = async (user: any) => {
   }
   const finalResult = [];
   for (const booking of bookings) {
+    if (
+      booking.status === "active" &&
+      new Date(booking.rent_end_date) < new Date()
+    ) {
+      await pool.query(`UPDATE bookings SET status='returned' WHERE id=$1`, [
+        booking.id,
+      ]);
+      await pool.query(
+        `UPDATE vehicles SET availability_status='available' WHERE id=$1`,
+        [booking.vehicle_id]
+      );
+      booking.status = "returned";
+    }
     const userResult = await pool.query(`SELECT * FROM users WHERE id=$1`, [
       booking.customer_id,
     ]);
