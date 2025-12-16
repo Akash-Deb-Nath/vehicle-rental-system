@@ -105,11 +105,11 @@ const updateBookingInDB = async (
     if (booking.customer_id !== user.id) {
       throw new Error("Forbidden: not your booking");
     }
-    if (new Date(booking.rent_start_date) <= new Date()) {
-      throw new Error("Cannot cancel after start date");
-    }
     if (status !== "cancelled") {
       throw new Error("Customers can only cancel bookings");
+    }
+    if (new Date(booking.rent_start_date) <= new Date()) {
+      throw new Error("Cannot cancel after start date");
     }
   }
   const result = await pool.query(
